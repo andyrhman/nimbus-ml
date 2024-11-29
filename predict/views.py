@@ -5,11 +5,10 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 import pandas as pd
 import numpy as np
 from tensorflow import keras
-from keras.src.legacy.saving import legacy_h5_format
 from geopy.distance import geodesic
 
 # Load the TensorFlow model
-nn_model = legacy_h5_format.load_model_from_hdf5('predict/tensorflow_wisata_model_with_predictions.h5', custom_objects={'mse': 'mse'})
+nn_model = keras.models.load_model('predict/tensorflow_wisata_model_with_predictions.keras')
 
 # Load the dataset
 df = pd.read_csv("predict/dataset_fix.csv")
@@ -56,7 +55,7 @@ class RecommendDestinationsAPIView(APIView):
                 axis=1
             )
 
-            recommendations = df.sort_values(by=["predicted_rating", "distance_km"], ascending=[False, True])
+            recommendations = df.sort_values(by=["distance_km", "predicted_rating"], ascending=[True, False])
             recommendations = recommendations.head(num_recommendations)
 
             # Prepare the response

@@ -6,7 +6,7 @@ mlenv
 __pycache__/
 db.sqlite3
 dataset_fix.csv
-tensorflow_wisata_model_with_predictions.h5
+tensorflow_wisata_model_with_predictions.keras
 nimbusml
 
 # Backup files #
