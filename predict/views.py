@@ -8,9 +8,13 @@ import numpy as np
 from tensorflow import keras
 from geopy.distance import geodesic
 from decouple import config
-recommend_destination_model = keras.models.load_model('predict/tensorflow_wisata_model_with_predictions.keras')
+import os
 
-df = pd.read_csv("predict/dataset_fix.csv")
+rootdir = os.path.join(os.getcwd(), "model")
+
+recommend_destination_model = keras.models.load_model(os.path.join(rootdir, config('MODEL_1')))
+
+df = pd.read_csv(os.path.join(rootdir, config('DATASET')))
 df.dropna(axis=0, inplace=True)
 df['latitude'] = df['latitude'].astype(float)
 df['longitude'] = df['longitude'].astype(float)
@@ -57,12 +61,12 @@ class RecommendDestinationsAPIView(APIView):
 
             return Response(response_data, status=status.HTTP_200_OK)
 
-        except Exception:
+        except Exception as e:
             if config('DEBUG', cast=bool):
                 traceback.print_exc()
             return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-topfive_similiar_destination_model = keras.models.load_model('predict/model_wisata_recommendation.keras')
+topfive_similiar_destination_model = keras.models.load_model(os.path.join(rootdir, config('MODEL_2')))
         
 class TopFiveSimiliarDestinationAPIView(APIView):
     def post(self, request):
@@ -101,7 +105,7 @@ class TopFiveSimiliarDestinationAPIView(APIView):
                 "top_five_similar_destinations": top_five_data
             }, status=status.HTTP_200_OK)
 
-        except Exception:
+        except Exception as e:
             if config('DEBUG', cast=bool):
                 traceback.print_exc()
             return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -119,8 +123,8 @@ class MostPopularDestination(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            dataset_path = 'predict/dataset_fix.csv'
-            model_path = 'predict/model_wisata_popularity_improved.keras'
+            dataset_path = os.path.join(rootdir, config('DATASET'))
+            model_path = os.path.join(rootdir, config('MODEL_3'))
 
             df = pd.read_csv(dataset_path)
             model = keras.models.load_model(model_path)
@@ -146,7 +150,7 @@ class MostPopularDestination(APIView):
 
             return Response(recommended_places.to_dict(orient='records'), status=status.HTTP_200_OK)
 
-        except Exception:
+        except Exception as e:
             if config('DEBUG', cast=bool):
                 traceback.print_exc()
             return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

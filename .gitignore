@@ -5,10 +5,10 @@ mlenv
 *.pyc
 __pycache__/
 db.sqlite3
-predict/dataset_fix.csv
-predict/tensorflow_wisata_model_with_predictions.keras
-predict/model_wisata_popularity_improved.keras
-predict/model_wisata_recommendation.keras
+model/*
+!model/.gitkeep 
+key.json
+download_models.py
 nimbusml
 
 # Backup files #
