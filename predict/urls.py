@@ -1,8 +1,9 @@
 from django.urls import path
 from django.conf import settings
-from django.conf.urls.static import static
-from .views import RecommendDestinationsAPIView
+from .views import MostPopularDestination, RecommendDestinationsAPIView, TopFiveSimiliarDestinationAPIView
 
 urlpatterns = [
-    path('recommend-destinations', RecommendDestinationsAPIView.as_view())
+    path('recommend-destinations', RecommendDestinationsAPIView.as_view()),
+    path('top-five-similar', TopFiveSimiliarDestinationAPIView.as_view()),
+    path('most-popular', MostPopularDestination.as_view())
 ]
