@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-@y+8^rqs@zk-(_50u+w%w^pbxlev$1)27j2=49&3mbrh4!idoo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./key.json"
 
@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "rest_framework",
     'django_extensions',
-    "predict"
+    "predict",
+    "healthcheck"
 ]
 
 
