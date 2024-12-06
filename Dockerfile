@@ -2,12 +2,14 @@ FROM python:3.10
 
 WORKDIR /app
 
+ENV HOST=0.0.0.0
+
 COPY requirements.txt /app/requirements.txt
 
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-EXPOSE 8001
+EXPOSE 8080
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8001", "app.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app.wsgi:application"]
