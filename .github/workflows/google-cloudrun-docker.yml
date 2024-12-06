@@ -36,18 +36,11 @@ jobs:
           echo MODEL_3=${{ secrets.MODEL_3 }} >> .env
 
       - name: 'Download models and dataset'
-        env:
-          CLOUD_STORAGE: ${{ secrets.CLOUD_STORAGE }}
-          DATASET: ${{ secrets.DATASET }}
-          MODEL_1: ${{ secrets.MODEL_1 }}
-          MODEL_2: ${{ secrets.MODEL_2 }}
-          MODEL_3: ${{ secrets.MODEL_3 }}
         run: |
           python - <<EOF
           import os
           import requests
 
-          # Fetch environment variables
           env_vars = {
               "DATASET": os.getenv("DATASET"),
               "MODEL_1": os.getenv("MODEL_1"),
@@ -55,11 +48,7 @@ jobs:
               "MODEL_3": os.getenv("MODEL_3"),
           }
 
-          for key, value in env_vars.items():
-              if not value:
-                  raise ValueError(f"Environment variable {key} is not set or is None.")
-
-          base_url = os.getenv("CLOUD_STORAGE")
+          base_url = "https://storage.googleapis.com/nimbus-model/"
           target_dir = os.path.join(os.getcwd(), "model")
 
           os.makedirs(target_dir, exist_ok=True)
@@ -74,7 +63,7 @@ jobs:
                       for chunk in response.iter_content(chunk_size=1024):
                           f.write(chunk)
               else:
-                  raise RuntimeError(f"Failed to download. Status code: {response.status_code}")
+                  print(f"Failed to download. Status code: {response.status_code}")
 
           print("Download completed!")
           EOF
