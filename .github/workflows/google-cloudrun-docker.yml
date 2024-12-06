@@ -41,20 +41,17 @@ jobs:
           import os
           import requests
 
-          env_vars = {
-              "DATASET": os.getenv("DATASET"),
-              "MODEL_1": os.getenv("MODEL_1"),
-              "MODEL_2": os.getenv("MODEL_2"),
-              "MODEL_3": os.getenv("MODEL_3"),
+          urls = {
+              "dataset_fix.csv": "https://storage.googleapis.com/nimbus-model/dataset_fix.csv",
+              "model_wisata_popularity_improved.keras": "https://storage.googleapis.com/nimbus-model/model_wisata_popularity_improved.keras",
+              "model_wisata_recommendation.keras": "https://storage.googleapis.com/nimbus-model/model_wisata_recommendation.keras",
+              "tensorflow_wisata_model_with_predictions.keras": "https://storage.googleapis.com/nimbus-model/tensorflow_wisata_model_with_predictions.keras",
           }
-
-          base_url = "https://storage.googleapis.com/nimbus-model/"
           target_dir = os.path.join(os.getcwd(), "model")
 
           os.makedirs(target_dir, exist_ok=True)
 
-          for key, filename in env_vars.items():
-              url = f"{base_url}{filename}"
+          for filename, url in urls.items():
               local_path = os.path.join(target_dir, filename)
               print(f"Downloading...")
               response = requests.get(url, stream=True)
