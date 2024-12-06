@@ -36,17 +36,28 @@ jobs:
           echo MODEL_3=${{ secrets.MODEL_3 }} >> .env
 
       - name: 'Download models and dataset'
+        env:
+          CLOUD_STORAGE: ${{ secrets.CLOUD_STORAGE }}
+          DATASET: ${{ secrets.DATASET }}
+          MODEL_1: ${{ secrets.MODEL_1 }}
+          MODEL_2: ${{ secrets.MODEL_2 }}
+          MODEL_3: ${{ secrets.MODEL_3 }}
         run: |
           python - <<EOF
           import os
           import requests
 
+          # Fetch environment variables
           env_vars = {
               "DATASET": os.getenv("DATASET"),
               "MODEL_1": os.getenv("MODEL_1"),
               "MODEL_2": os.getenv("MODEL_2"),
               "MODEL_3": os.getenv("MODEL_3"),
           }
+
+          for key, value in env_vars.items():
+              if not value:
+                  raise ValueError(f"Environment variable {key} is not set or is None.")
 
           base_url = os.getenv("CLOUD_STORAGE")
           target_dir = os.path.join(os.getcwd(), "model")
@@ -63,7 +74,7 @@ jobs:
                       for chunk in response.iter_content(chunk_size=1024):
                           f.write(chunk)
               else:
-                  print(f"Failed to download. Status code: {response.status_code}")
+                  raise RuntimeError(f"Failed to download. Status code: {response.status_code}")
 
           print("Download completed!")
           EOF
@@ -98,4 +109,9 @@ jobs:
             --image ${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.SERVICE }}/${{ secrets.SERVICE }}:latest \
             --platform managed \
             --region ${{ secrets.REGION }} \
-            --allow-unauthenticated
+            --allow-unauthenticated \
+            --cpu=2 \
+            --memory=2Gi \
+            --min-instances=1 \
+            --service-min-instances=1 \
+            --max-instances=3
