@@ -154,3 +154,79 @@ class MostPopularDestination(APIView):
             if config('DEBUG', cast=bool):
                 traceback.print_exc()
             return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+def calculate_distance(lat1, lon1, lat2, lon2):
+    coords_1 = (lat1, lon1)
+    coords_2 = (lat2, lon2)
+    return geodesic(coords_1, coords_2).kilometers
+
+class ItineraryGeneratorAPIView(APIView):
+    def post(self, request):
+        try:
+            theme = request.data.get('theme')
+            region = request.data.get('region')
+            num_destinations = request.data.get('num_destinations', 5)
+
+            if not theme or not region:
+                return Response({"error": "'theme' and 'region' are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+            dataset_path = os.path.join(rootdir, config('DATASET'))
+            df = pd.read_csv(dataset_path)
+
+            filtered_df = df[df['kategori'].str.contains(theme, case=False, na=False)]
+            filtered_df = filtered_df[filtered_df['letak_provinsi'] == region]
+            selected_places = filtered_df.sample(n=num_destinations)['nama_destinasi'].tolist()
+
+            model_path = os.path.join(rootdir, config('MODEL_4'))
+            model = keras.models.load_model(model_path)
+
+            tokenizer = keras.preprocessing.text.Tokenizer()
+            tokenizer.fit_on_texts(filtered_df['nama_destinasi'] + ', ' + filtered_df['kategori'] + ', ' + filtered_df['letak_provinsi'])
+
+            prompt = f"Generate an itinerary for {theme} tourism in {region} including: {', '.join(selected_places)}"
+            input_seq = tokenizer.texts_to_sequences([prompt])[0]
+            for _ in range(20):
+                input_array = keras.preprocessing.sequence.pad_sequences([input_seq], maxlen=15, padding='post')
+                predicted_probs = model.predict(input_array, verbose=0)
+                predicted_index = np.argmax(predicted_probs[0, -1])
+                if not predicted_index:
+                    break
+                input_seq.append(predicted_index)
+
+            itinerary_details = []
+            visited_destinations = set()
+
+            for i in range(len(selected_places) - 1):
+                place1 = selected_places[i]
+                place2 = selected_places[i + 1]
+
+                if place1 in visited_destinations:
+                    continue
+                visited_destinations.add(place1)
+
+                loc1 = df[df['nama_destinasi'] == place1].iloc[0]
+                loc2 = df[df['nama_destinasi'] == place2].iloc[0]
+
+                lat1, lon1 = loc1['latitude'], loc1['longitude']
+                lat2, lon2 = loc2['latitude'], loc2['longitude']
+
+                distance = calculate_distance(lat1, lon1, lat2, lon2)
+
+                rating1 = loc1['average_rating']
+                rating2 = loc2['average_rating']
+
+                predicted_rating1 = (rating1 + rating2) / 2
+
+                itinerary_details.append({
+                    'nama_destinasi': place1,
+                    'letak_provinsi': loc1['letak_provinsi'],
+                    'kategori': loc1['kategori'],
+                    'average_rating': rating1,
+                    'predicted_rating': predicted_rating1,
+                    'distance_km': 0 if i == 0 else distance
+                })
+
+            return Response(itinerary_details, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

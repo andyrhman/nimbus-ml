@@ -34,6 +34,7 @@ jobs:
           echo MODEL_1=${{ secrets.MODEL_1 }} >> .env
           echo MODEL_2=${{ secrets.MODEL_2 }} >> .env
           echo MODEL_3=${{ secrets.MODEL_3 }} >> .env
+          echo MODEL_4=${{ secrets.MODEL_4 }} >> .env
 
       - name: 'Download models and dataset'
         run: |
@@ -46,6 +47,7 @@ jobs:
               "model_wisata_popularity_improved.keras": "https://storage.googleapis.com/nimbus-model/model_wisata_popularity_improved.keras",
               "model_wisata_recommendation.keras": "https://storage.googleapis.com/nimbus-model/model_wisata_recommendation.keras",
               "tensorflow_wisata_model_with_predictions.keras": "https://storage.googleapis.com/nimbus-model/tensorflow_wisata_model_with_predictions.keras",
+              "generative_model_genai.keras": "https://storage.googleapis.com/nimbus-model/generative_model_genai.keras"
           }
           target_dir = os.path.join(os.getcwd(), "model")
 
@@ -95,9 +97,4 @@ jobs:
             --image ${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.SERVICE }}/${{ secrets.SERVICE }}:latest \
             --platform managed \
             --region ${{ secrets.REGION }} \
-            --allow-unauthenticated \
-            --cpu=2 \
-            --memory=2Gi \
-            --min-instances=1 \
-            --service-min-instances=1 \
-            --max-instances=3
+            --allow-unauthenticated
