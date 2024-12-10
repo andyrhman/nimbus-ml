@@ -10,6 +10,7 @@ model/*
 key.json
 download_models.py
 nimbusml
+nimbus-service.json
 
 # Backup files #
 *.bak

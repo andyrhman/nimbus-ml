@@ -6,7 +6,7 @@
 
 ## Introduction
 
--
+This is the backend server responsible for managing the machine learning model. It runs on TensorFlow 2.18 for processing the model. This backend server communicates with our NodeJS backend server, where NodeJS handles the request to this Django REST server for processing the model and subsequently sends the result back to NodeJS.
 
 ## First Time Set Up & Configuration
 
