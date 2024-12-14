@@ -5,7 +5,7 @@ import sys
 from django.core.management.commands.runserver import Command as runserver
 
 def main():
-    runserver.default_port = "8001" 
+    runserver.default_port = "8080" 
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings')
     try:
