@@ -3,6 +3,7 @@ FROM python:3.10
 WORKDIR /app
 
 ENV HOST=0.0.0.0
+ENV CUDA_VISIBLE_DEVICES=-1
 
 COPY requirements.txt /app/requirements.txt
 

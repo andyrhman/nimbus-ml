@@ -1,4 +1,4 @@
-# Django ML
+# Nimbus Machine Learning Server
 
 <p align="center">
   <img src="https://1000logos.net/wp-content/uploads/2020/08/Django-Logo.png" width="300" height="200" />
@@ -34,7 +34,7 @@ pip install tensorflow
 Create the directory:
 
 ```bash
-mkdir django-auth
+mkdir nimbus-ml
 django-admin startproject app .
 django-admin startapp <folder name>
 

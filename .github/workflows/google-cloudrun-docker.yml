@@ -97,9 +97,4 @@ jobs:
             --image ${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.SERVICE }}/${{ secrets.SERVICE }}:latest \
             --platform managed \
             --region asia-southeast2 \
-            --allow-unauthenticated \
-            --cpu=2 \
-            --memory=2Gi \
-            --min-instances=1 \
-            --service-min-instances=1 \
-            --max-instances=3
+            --allow-unauthenticated
